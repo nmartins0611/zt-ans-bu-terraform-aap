@@ -189,7 +189,7 @@ In the left-hand menu, **navigate to** `Execution → Execution Environments`.
 | `Only pull the image if not present before running`
 
 | Registry credential
-| _Leave blank_
+| `Quay Registry Credential`
 |===
 +
 NOTE: The image `quay.io/acme_corp/terraform_ee` is public, so no registry credential is required. For this lab, we use this pre-existing image to demonstrate how you would add your own.
