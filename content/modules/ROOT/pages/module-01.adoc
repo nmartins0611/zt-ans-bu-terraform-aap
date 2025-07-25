@@ -104,7 +104,9 @@ WARNING: You *must* update this configuration with your specific details.
 * **`key`**: Replace `YOURNAME` with your name or a unique identifier (e.g., `johnsmith/tfstatefile`).
 * **`access_key`** and **`secret_key`**: Replace with the AWS Access Key and Secret Key from the `AWS Console` lab tab.
 +
+
 Your final configuration will look similar to this example:
++
 image::https://github.com/HichamMourad/terraform-aap/blob/main/images/tfbackendcred.png?raw=true[Terraform Backend Credential Configuration, opts="border"]
 
 . **Save the credential.**
