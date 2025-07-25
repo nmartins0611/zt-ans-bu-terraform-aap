@@ -141,7 +141,7 @@ podman images
 
 TIP: At this point, you would typically push the image to a container registry like Quay.io, Docker Hub, or a private Automation Hub. While we will use a pre-existing public image in the next step, the commands to tag and push your own image would look like this:
 +
-.Example push to Quay.io
+. Example commands on how to tag and then push the Execution Environment image to Quay.io
 [source,bash]
 ----
 # Tag the image for your registry
