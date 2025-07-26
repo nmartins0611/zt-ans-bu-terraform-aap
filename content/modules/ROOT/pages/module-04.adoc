@@ -30,56 +30,66 @@ NOTE: You can perform the following steps in the `TERMINAL` or within the `VSCOD
 
 Red Hat provides the `cloud.terraform` collection as a certified, tested method for orchestrating Terraform from within Ansible.
 
-Additionally, for more Terraform-centric workflows, there are two community providers available on the Terraform Registry:
+.Additionally, for more Terraform-centric workflows, there are two community providers available on the Terraform Registry:
 * **`ansible/ansible`**: The Terraform Provider for Ansible, for managing a local Ansible inventory.
-* **`ansible/aap`**: The Terraform Provider for Ansible Automation Platform, for interacting with AAP resources.
+* **`ansible/aap`**: The Terraform Provider for Ansible Automation Platform, for interacting with Ansible Automation Platform resources.
 
 This challenge will give you command-line exposure to these powerful integration tools.
 
 ---
 
-== Task 1: Use the `cloud.terraform` Collection
+== Task 1: Install and Use the `cloud.terraform` Red Hat Certified Collection
 
 First, you'll use the `ansible-playbook` command to run a playbook that leverages the `cloud.terraform` collection to manage infrastructure.
 
-.  **Install the collection.**
-    +
-    **Open** the `TERMINAL` and **install** the collection from Ansible Galaxy.
-    +
-    [source,bash]
-    ----
-    ansible-galaxy collection install cloud.terraform
-    ----
-
-.  **Navigate to the project directory.**
-    +
-    **Change** into the correct lab directory.
-    +
-    [source,bash]
-    ----
-    cd /home/rhel/lab_exercises/2.Terraform_Ansible
-    ----
-
-.  **Create an Ansible playbook.**
-    +
-    **Create** a new file named `deploy.yml` and **paste** the following content into it.
-    +
-    [source,yaml]
-    ----
-    ---
+. **Install the collection.**
++
+**Open** the `TERMINAL` and **install** the collection from Ansible Galaxy.
++
+[source,bash]
+----
+ansible-galaxy collection install cloud.terraform
+----
++
+. **Verify the collection is installed.**
++
+**Run** the following command to verify the collection is installed.
++
+[source,bash]
+----
+ansible-galaxy collection list
+----
++
+. **Navigate to the project directory.**
++
+**Change** into the correct lab directory.
++
+[source,bash]
+----
+cd /home/rhel/lab_exercises/2.Terraform_Ansible
+----
++
+. **Create an Ansible playbook.**
++
+**Create** a new file named `deploy.yml` and **paste** the following content into it.
++
+[source,yaml]
+----
+---
     - name: Infrastructure Deployment
       hosts: localhost
 
       vars:
         project_dir: /home/rhel/lab_exercises/2.Terraform_Ansible
-
+      
       tasks:
+      
         - name: Basic deploy of an instance
           cloud.terraform.terraform:
             project_path: '{{ project_dir }}'
             state: present
             force_init: true
-
+      
         - name: Remove Instance
           cloud.terraform.terraform:
             project_path: '{{ project_dir }}'
@@ -88,201 +98,201 @@ First, you'll use the `ansible-playbook` command to run a playbook that leverage
           tags:
             - never
             - remove
-    ----
-    This playbook has two main tasks: the first uses `state: present` to create infrastructure, and the second uses `state: absent` to destroy it. The second task will only run when the `remove` tag is specified.
+----
 
-.  **Run the playbook to create infrastructure.**
-    +
-    **Execute** the playbook. This will trigger the Terraform project located in the current directory (`project_path`).
-    +
-    [source,bash]
-    ----
-    ansible-playbook deploy.yml
-    ----
+ This playbook has two main tasks: the first uses `state: present` to create infrastructure, and the second uses `state: absent` to destroy it. The second task will only run when the `remove` tag is specified.
 
-.  **Verify creation in AWS.**
-    +
-    **Click** the `AWS Console` tab, **log in** with the provided credentials, and **verify** that the new infrastructure (VPC, Subnets, EC2 instance, etc.) has been created.
-    +
-    image::https://github.com/HichamMourad/terraform-aap/blob/main/images/awsconsole.png?raw=true[AWS Console Login Details, 800, opts="border"]
+. **Run the playbook to create infrastructure.**
++
+**Execute** the playbook. This will trigger the Terraform project located in the current directory (`project_path`).
++
+[source,bash]
+----
+ansible-playbook deploy.yml
+----
 
-.  **Run the playbook to destroy infrastructure.**
-    +
-    Now, **run** the playbook again, but this time **use the `remove` tag** to execute the second task and clean up the resources.
-    +
-    [source,bash]
-    ----
-    ansible-playbook deploy.yml --tags remove
-    ----
-    +
-    While still in the AWS console, observe that the resources have been removed.
+. **Verify creation in AWS.**
++
+**Click** the `AWS Console` tab, **log in** with the provided credentials, and **verify** that the new infrastructure (VPC, Subnets, EC2 instance, etc.) has been created.
++
+image::https://github.com/HichamMourad/terraform-aap/blob/main/images/awsconsole.png?raw=true[AWS Console Login Details, 800, opts="border"]
+
+. **Run the playbook to destroy infrastructure.**
++
+Now, **run** the playbook again, but this time **use the `remove` tag** to execute the second task and clean up the resources.
++
+[source,bash]
+----
+ansible-playbook deploy.yml --tags remove
+----
++
+While still in the AWS console, observe that the resources have been removed.
 
 ---
-
 == Task 2: Use the Terraform Provider for Ansible
 
 This optional task demonstrates how to use the `ansible/ansible` provider to manage a local Ansible inventory directly from your Terraform configuration.
 
-.  **Navigate to the project directory.**
-    +
-    **Change** into the correct lab directory.
-    +
-    [source,bash]
-    ----
-    cd /home/rhel/lab_exercises/3.Terraform_Provider
-    ----
+. **Navigate to the project directory.**
++
+**Change** into the correct lab directory.
++
+[source,bash]
+----
+cd /home/rhel/lab_exercises/3.Terraform_Provider
+----
 
-.  **Update the Terraform providers.**
-    +
-    **Edit** the `main.tf` file to add the `ansible/ansible` provider to the `required_providers` block.
-    +
-    .Before
-    [source,terraform]
-    ----
-    terraform {
-      required_providers {
-        aws = {
-          source  = "hashicorp/aws"
-          version = "~> 6.0"
-        }
-      }
+. **Update the Terraform providers.**
++
+**Edit** the `main.tf` file to add the `ansible/ansible` provider to the `required_providers` block.
++
+.Before
+[source,terraform]
+----
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
     }
-    ----
-    +
-    .After
-    [source,terraform]
-    ----
-    terraform {
-      required_providers {
-        ansible = {
-          version = "~> 1.3.0"
-          source  = "ansible/ansible"
-        }
-        aws = {
-          source  = "hashicorp/aws"
-          version = "~> 6.0"
-        }
-      }
+  }
+}
+----
++
+.After
+[source,terraform]
+----
+terraform {
+  required_providers {
+    ansible = {
+      version = "~> 1.3.0"
+      source  = "ansible/ansible"
     }
-    ----
-
-.  **Add your SSH public key.**
-    +
-    First, **get** your public key from the terminal.
-    +
-    [source,bash]
-    ----
-    cat ~/.ssh/id_rsa.pub
-    ----
-    +
-    Next, **copy** the output and **paste** it into the `public_key` argument of the `aws_key_pair` resource in `main.tf`.
-
-.  **Add the Ansible host resource.**
-    +
-    **Add** the following `ansible_host` resource block to the end of `main.tf`. This tells the provider to add the new EC2 instance to the `nginx` group in the Ansible inventory.
-    +
-    [source,terraform]
-    ----
-    resource "ansible_host" "my_ec2" {
-      name   = aws_instance.my_ec2.public_dns
-      groups = ["nginx"]
-      variables = {
-        ansible_user                 = "ec2-user",
-        ansible_ssh_private_key_file = "~/.ssh/id_rsa",
-        ansible_python_interpreter   = "/usr/bin/python3",
-      }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
     }
-    ----
+  }
+}
+----
 
-.  **Create and run a deployment script.**
-    +
-    **Create** a file named `deploy.sh` and make it executable.
-    +
-    [source,bash]
-    ----
-    chmod +x deploy.sh
-    ----
-    +
-    **Paste** the following content into `deploy.sh`.
-    +
-    [source,bash]
-    ----
-    #!/bin/sh
-    set -eux
+. **Add your SSH public key.**
++
+First, **get** your public key from the terminal.
++
+[source,bash]
+----
+cat ~/.ssh/id_rsa.pub
+----
++
+Next, **copy** the output and **paste** it into the `public_key` argument of the `aws_key_pair` resource in `main.tf`.
 
-    terraform init
-    terraform apply -auto-approve
+. **Add the Ansible host resource.**
++
+**Add** the following `ansible_host` resource block to the end of `main.tf`. This tells the provider to add the new EC2 instance to the `nginx` group in the Ansible inventory.
++
+[source,terraform]
+----
+resource "ansible_host" "my_ec2" {
+  name   = aws_instance.my_ec2.public_dns
+  groups = ["nginx"]
+  variables = {
+    ansible_user                 = "ec2-user",
+    ansible_ssh_private_key_file = "~/.ssh/id_rsa",
+    ansible_python_interpreter   = "/usr/bin/python3",
+  }
+}
+----
 
-    ansible-playbook -i inventory.yml nginx.yml
+. **Create and run a deployment script.**
++
+**Create** a file named `deploy.sh` and make it executable.
++
+[source,bash]
+----
+chmod +x deploy.sh
+----
++
+**Paste** the following content into `deploy.sh`.
++
+[source,bash]
+----
+#!/bin/sh
+set -eux
 
-    ip=$(ansible-inventory -i inventory.yml --list | jq -r '.nginx.hosts[0]')
-    curl "http://${ip}" --fail
-    ----
-    +
-    **Run** the script. It will provision the infrastructure with Terraform, configure it with Ansible, and test the result with `curl`.
-    +
-    [source,bash]
-    ----
-    ./deploy.sh
-    ----
+terraform init
+terraform apply -auto-approve
 
-.  **Verify the inventory.**
-    +
-    **Check** the Ansible inventory to see the host that was added by the provider.
-    +
-    [source,bash]
-    ----
-    ansible-inventory -i inventory.yml --graph --vars
-    ----
+ansible-playbook -i inventory.yml nginx.yml
 
-.  **Clean up resources.**
-    +
-    **Destroy** the infrastructure using Terraform.
-    +
-    [source,bash]
-    ----
-    terraform destroy
-    ----
-    +
-    When prompted, **type** `yes` to confirm.
+ip=$(ansible-inventory -i inventory.yml --list | jq -r '.nginx.hosts[0]')
+curl "http://${ip}" --fail
+----
++
+**Run** the script. It will provision the infrastructure with Terraform, configure it with Ansible, and test the result with `curl`.
++
+[source,bash]
+----
+./deploy.sh
+----
+
+. **Verify the inventory.**
++
+**Check** the Ansible inventory to see the host that was added by the provider.
++
+[source,bash]
+----
+ansible-inventory -i inventory.yml --graph --vars
+----
+
+. **Clean up resources.**
++
+**Destroy** the infrastructure using Terraform.
++
+[source,bash]
+----
+terraform destroy
+----
++
+When prompted, **type** `yes` to confirm.
 
 ---
 
-== Task 3: Use the Terraform Provider for AAP
+== Task 3: Use the Terraform Provider for Ansible Automation Platform
 
 This task shows how the `ansible/aap` provider can push host information from a Terraform run directly into an Ansible Automation Platform inventory.
 
-.  **Navigate to the project directory.**
-    +
-    [source,bash]
-    ----
-    cd /home/rhel/lab_exercises/4.Terraform_AAP_Provider
-    ----
+. **Navigate to the project directory.**
++
+[source,bash]
+----
+cd /home/rhel/lab_exercises/4.Terraform_AAP_Provider
+----
 
-.  **Modify the `main.tf` file.**
-    +
-    **Edit** `main.tf` and **uncomment** the three sections related to the AAP provider:
-    +
-    * The `aap` provider in the `required_providers` block.
-    * The `provider "aap"` configuration block.
-    * The `resource "aap_host"` block at the end of the file.
+. **Modify the `main.tf` file.**
++
+**Edit** `main.tf` and **uncomment** the three sections related to the AAP provider:
++
+* The `aap` provider in the `required_providers` block.
+* The `provider "aap"` configuration block.
+* The `resource "aap_host"` block at the end of the file.
 
-.  **Initialize, plan, and apply.**
-    +
-    **Run** the standard Terraform workflow to build the infrastructure.
-    +
-    [source,bash]
-    ----
-    terraform init
-    terraform plan -out myInstanceForAAP
-    terraform apply myInstanceForAAP
-    ----
+. **Initialize, plan, and apply.**
++
+**Run** the standard Terraform workflow to build the infrastructure.
++
+[source,bash]
+----
+terraform init
+terraform plan -out myInstanceForAAP
+terraform apply myInstanceForAAP
+----
 
-.  **Verify the host in AAP.**
-    +
-    **Log in** to Ansible Automation Platform and **navigate** to `Resources → Inventories`. **Select** the `Terraform Inventory` and go to the `Hosts` tab. You will see the new host (`aws_instance_tf`) that was added directly by the Terraform provider.
-    +
-    image::https://github.com/HichamMourad/terraform-aap/blob/main/images/aapproviderinventory1.png?raw=true[Host in AAP Inventory, 800, opts="border"]
+. **Verify the host in AAP.**
++
+**Log in** to Ansible Automation Platform and **navigate** to `Resources → Inventories`. **Select** the `Terraform Inventory` and go to the `Hosts` tab. You will see the new host (`aws_instance_tf`) that was added directly by the Terraform provider.
++
+image::https://github.com/HichamMourad/terraform-aap/blob/main/images/aapproviderinventory1.png?raw=true[Host in AAP Inventory, 800, opts="border"]
 
 ---
 
