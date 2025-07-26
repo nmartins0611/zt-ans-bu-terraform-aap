@@ -140,8 +140,8 @@ podman images
 ----
 
 TIP: At this point, you would typically push the image to a container registry like Quay.io, Docker Hub, or a private Automation Hub. While we will use a pre-existing public image in the next step, the commands to tag and push your own image would look like this:
-+
-.Example push to Quay.io
+
+**Example commands on how to tag and then push the Execution Environment container image to Quay.io**
 [source,bash]
 ----
 # Tag the image for your registry
@@ -189,7 +189,7 @@ In the left-hand menu, **navigate to** `Execution → Execution Environments`.
 | `Only pull the image if not present before running`
 
 | Registry credential
-| _Leave blank_
+| `Quay Registry Credential`
 |===
 +
 NOTE: The image `quay.io/acme_corp/terraform_ee` is public, so no registry credential is required. For this lab, we use this pre-existing image to demonstrate how you would add your own.
